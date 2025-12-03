@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wedos-sa <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:50:26 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/02 15:50:34 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/03 19:32:07 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,29 @@
 
 # include <stdio.h>
 # include <unistd.h>
+# include <pthread.h>
+# include <stdlib.h>
 
-//main.c
+int		ft_atoi(const char *string);
 
+typedef struct	s_philo
+{
+	int		philosophers;
+	int		to_die;
+	int		to_eat;
+	int		to_sleep;
+}	t_philo;
+
+typedef struct	s_list
+{
+	struct s_list	*next;
+	struct s_list	*prev;
+	int				ph_nb;
+	t_philo			*info;
+} t_list;
+
+void	append_item(t_list **ptr, int ph_nb, t_philo *info);
+t_list	*create_elem(int ph_nb, t_philo *info);
+t_list	*list_last(t_list *begin_list);
 
 #endif
