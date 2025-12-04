@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:50:26 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/04 14:19:32 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/04 15:27:55 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ int		ft_atoi(const char *string);
 
 typedef struct	s_philo
 {
-	int		philosophers;
-	int		to_die;
-	int		to_eat;
-	int		to_sleep;
+	int				philosophers;
+	int				to_die;
+	int				to_eat;
+	int				to_sleep;
+	pthread_mutex_t	*hashi;
 }	t_philo;
 
 typedef struct	s_list
@@ -37,7 +38,8 @@ typedef struct	s_list
 	int				eating;
 	int				sleeping;
 	int				thinking;
-	pthread_mutex_t	hashi;
+	pthread_mutex_t	*left;
+	pthread_mutex_t	*right;
 } t_list;
 
 void	append_item(t_list **ptr, int ph_nb, t_philo *info);
