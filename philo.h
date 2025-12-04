@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:50:26 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/03 19:32:07 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/04 14:19:32 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,10 @@ typedef struct	s_list
 	struct s_list	*prev;
 	int				ph_nb;
 	t_philo			*info;
+	int				eating;
+	int				sleeping;
+	int				thinking;
+	pthread_mutex_t	hashi;
 } t_list;
 
 void	append_item(t_list **ptr, int ph_nb, t_philo *info);

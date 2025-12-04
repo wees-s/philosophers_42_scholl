@@ -27,6 +27,21 @@ t_list	*create_elem(int ph_nb, t_philo *info)
 	return (ptr);
 }
 
+int	list_size(t_list *begin_list)
+{
+	int			i;
+	t_list		*index;
+
+	index = begin_list;
+	i = 0;
+	while (index)
+	{
+		i++;
+		index = index -> next;
+	}
+	return (i);
+}
+
 void	append_item(t_list **ptr, int ph_nb, t_philo *info)
 {
 	t_list	*last;
@@ -44,5 +59,6 @@ void	append_item(t_list **ptr, int ph_nb, t_philo *info)
 	}
 	last = list_last(*ptr);
 	last->next = item;
-    last->next->prev = last;
+	last->next->prev = last;
+	(*ptr)->prev = last->next;
 }
