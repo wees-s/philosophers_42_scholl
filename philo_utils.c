@@ -42,7 +42,7 @@ int	ft_atoi(const char *string)
 
 void	*routine(void *arg)
 {
-	printf("THREAD CRIADA - ROUTINE FUNCTION\n\n");
+	printf("ROUTINE\n\n");
 	(void)arg;
 	return (NULL);
 }

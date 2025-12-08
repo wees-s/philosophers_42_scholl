@@ -35,6 +35,24 @@ static int	valid_input(char **argv)
 	return (1);
 }
 
+static void	join_all_thread(t_list **philos)
+{
+	t_list	*start;
+	t_list	*curr;
+
+	start = (*philos);
+	curr = (*philos);
+	if (!curr)
+		return ;
+	while (1)
+	{
+		pthread_join(curr->thread, NULL);
+		curr = curr->next;
+		if (curr == start)
+			break ;
+	}
+}
+
 static void init_table(t_philo *info, t_list **philos)
 {
 	t_list *reset_list;
@@ -49,33 +67,21 @@ static void init_table(t_philo *info, t_list **philos)
 			(*philos)->left = &info->hashi[i];
 			(*philos)->right = reset_list->left;
 			pthread_create(&(*philos)->thread, NULL, routine, NULL);
-			pthread_join((*philos)->thread, NULL);
-			printf("FILÓSOFO %d\n", i);
-			printf("THREAD: %lu\n", (*philos)->thread);
-			printf("HASHI LEFT: %p\n", (*philos)->left);
-			printf("HASHI RIGHT: %p\n\n", (*philos)->right);
 			break ;
 		}
 		(*philos)->left = &info->hashi[i];
 		(*philos)->right = &info->hashi[i + 1];
 		pthread_create(&(*philos)->thread, NULL, routine, NULL);
-		pthread_join((*philos)->thread, NULL);
-		printf("FILÓSOFO %d\n", i);
-		printf("THREAD: %lu\n", (*philos)->thread);
-		printf("HASHI LEFT: %p\n", (*philos)->left);
-		printf("HASHI RIGHT: %p\n\n", (*philos)->right);
 		(*philos) = (*philos)->next;
 		i++;
 	}
 	(*philos) = reset_list;
 }
 
-static void	init_philo(int argc, char **argv, t_philo *info, t_list **philos)
+static void	init_philo(char **argv, t_philo *info, t_list **philos)
 {
 	int		i;
 	int		j;
-	//pthread_mutex_t *hashi;
-	(void)argc;
 
 	j = 0;
 	i = 1;
@@ -84,28 +90,19 @@ static void	init_philo(int argc, char **argv, t_philo *info, t_list **philos)
 	info->to_eat = ft_atoi(argv[3]);
 	info->to_sleep = ft_atoi(argv[4]);
 	(*philos) = create_elem(0, info);
-	printf("mutex criado com sucesso\n");
 	(*philos)->eating = 0;
 	(*philos)->sleeping = 0;
 	(*philos)->thinking = 0;
 	info->hashi = malloc(sizeof(pthread_mutex_t) * info->philosophers);
 	pthread_mutex_init(&info->hashi[j], NULL);
-	printf("filosofo adicionado com sucesso\n");
-	printf("FILÓSOFO 0\n\n");
-	//pthread_mutex_t	hashi;
 	while (i < ft_atoi(argv[1]))
 	{
 		pthread_mutex_init(&info->hashi[j], NULL);
-		printf("mutex criado com sucesso\n");
 		append_item(philos, i, info);
-		printf("filosofo adicionado com sucesso\n");
-		printf("FILÓSOFO %d\n\n", i);
-		//pthread_mutex_init(&ph->hashi[j], NULL);
-		//(*philos)->left = &ph->hashi[j];
 		i++;
 		j++;
 	}
-	printf("\n\n\n\n");
+
 	init_table(info, philos);
 }
 
@@ -125,14 +122,142 @@ int	main(int argc, char **argv)
 		return (0);
 	}
 	philos = (t_list *)malloc(sizeof(t_list) * ft_atoi(argv[1]));
-	init_philo(argc, argv, &info, &philos);
-	//printf("cheguei aqui 3\n");
-	//printf("prev firts -> %d\n", philos->prev->ph_nb);
-	// while(philos)
-	// {
-	// 	printf("philo = %d\n", philos->ph_nb);
-	// 	printf("to die %d\nto_eat %d\nto_sleep %d\n\n", philos->info->to_die, philos->info->to_eat, philos->info->to_sleep);
-	// 	philos = philos->next;
-	// }
+	init_philo(argv, &info, &philos);
+	join_all_thread(&philos);
 	return (0);
 }
+
+/*
+#include "philo.h"
+
+static int	valid_input(char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	while(argv[i])
+	{
+		j = 0;
+		while (argv[i][j])
+		{
+			if (!(argv[i][j] >= '0' && argv[i][j] <= '9'))
+			{
+				write(2, "Only DIGITS are accepted.\n", 27);
+				exit(EXIT_FAILURE);
+			}
+			j++;
+		}
+		i++;
+	}
+	return (1);
+}
+
+static void	join_all_thread(t_list **philos)
+{
+	t_list	*start;
+	t_list	*curr;
+
+	start = (*philos);
+	curr = (*philos);
+	if (!curr)
+		return ;
+	while (1)
+	{
+		pthread_join(curr->thread, NULL);
+		curr = curr->next;
+		printf("join aconteceu aqui\n"); // apagar
+		if (curr == start)
+			break ;
+	}
+}
+
+static void init_table(t_philo *info, t_list **philos)
+{
+	t_list *reset_list;
+	int		i;
+
+	i = 0;
+	reset_list = (*philos);
+	while (*philos)
+	{
+		if((*philos)->next == reset_list)
+		{
+			(*philos)->left = &info->hashi[i];
+			(*philos)->right = reset_list->left;
+			pthread_create(&(*philos)->thread, NULL, routine, NULL);
+			printf("FILÓSOFO %d\n", i); // apagar
+			printf("THREAD: %ld\n", (*philos)->thread); // apagar
+			printf("HASHI LEFT: %p\n", (*philos)->left); // apagar
+			printf("HASHI RIGHT: %p\n\n", (*philos)->right); // apagar
+			break ;
+		}
+		(*philos)->left = &info->hashi[i];
+		(*philos)->right = &info->hashi[i + 1];
+		pthread_create(&(*philos)->thread, NULL, routine, NULL);
+		//pthread_join((*philos)->thread, NULL);
+		printf("FILÓSOFO %d\n", i); // apagar
+		printf("THREAD: %ld\n", (*philos)->thread); // apagar
+		printf("HASHI LEFT: %p\n", (*philos)->left); // apagar
+		printf("HASHI RIGHT: %p\n\n", (*philos)->right); // apagar
+		(*philos) = (*philos)->next;
+		i++;
+	}
+	(*philos) = reset_list;
+}
+
+static void	init_philo(char **argv, t_philo *info, t_list **philos)
+{
+	int		i;
+	int		j;
+
+	j = 0;
+	i = 1;
+	info->philosophers = ft_atoi(argv[1]);
+	info->to_die = ft_atoi(argv[2]);
+	info->to_eat = ft_atoi(argv[3]);
+	info->to_sleep = ft_atoi(argv[4]);
+	(*philos) = create_elem(0, info);
+	printf("mutex criado com sucesso\n"); // apagar
+	(*philos)->eating = 0;
+	(*philos)->sleeping = 0;
+	(*philos)->thinking = 0;
+	info->hashi = malloc(sizeof(pthread_mutex_t) * info->philosophers);
+	pthread_mutex_init(&info->hashi[j], NULL);
+	printf("filosofo adicionado com sucesso\n"); // apagar
+	printf("FILÓSOFO 0\n\n"); //apagar
+	while (i < ft_atoi(argv[1]))
+	{
+		pthread_mutex_init(&info->hashi[j], NULL);
+		printf("mutex criado com sucesso\n"); // apagar
+		append_item(philos, i, info);
+		printf("filosofo adicionado com sucesso\n"); // apagar
+		printf("FILÓSOFO %d\n\n", i); // apagar
+		i++;
+		j++;
+	}
+	printf("\n\n\n\n"); // apagar
+	init_table(info, philos);
+}
+
+int	main(int argc, char **argv)
+{
+	t_philo info;
+	t_list	*philos;
+
+	if (argc != 5 || !valid_input(argv) || ft_atoi(argv[1]) < 1)
+	{
+		if (ft_atoi(argv[1]) < 1)
+		{
+			write(2, "ERROR: Minimum 1 philosopher\n", 30);
+			return (1);
+		}
+		write(2, "ERROR: Try: ./philo 5 20 5 5\n", 30);
+		return (0);
+	}
+	philos = (t_list *)malloc(sizeof(t_list) * ft_atoi(argv[1]));
+	init_philo(argv, &info, &philos);
+	join_all_thread(&philos);
+	return (0);
+}
+*/
