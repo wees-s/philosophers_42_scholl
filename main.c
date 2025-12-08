@@ -102,7 +102,6 @@ static void	init_philo(char **argv, t_philo *info, t_list **philos)
 		i++;
 		j++;
 	}
-
 	init_table(info, philos);
 }
 
