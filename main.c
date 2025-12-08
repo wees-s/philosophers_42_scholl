@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:49:00 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/04 17:10:41 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/05 13:00:52 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,26 @@ static void init_table(t_philo *info, t_list **philos)
 		{
 			(*philos)->left = &info->hashi[i];
 			(*philos)->right = reset_list->left;
+			pthread_create(&(*philos)->thread, NULL, routine, NULL);
+			pthread_join((*philos)->thread, NULL);
 			printf("FILÓSOFO %d\n", i);
+			printf("THREAD: %lu\n", (*philos)->thread);
 			printf("HASHI LEFT: %p\n", (*philos)->left);
 			printf("HASHI RIGHT: %p\n\n", (*philos)->right);
 			break ;
 		}
 		(*philos)->left = &info->hashi[i];
 		(*philos)->right = &info->hashi[i + 1];
+		pthread_create(&(*philos)->thread, NULL, routine, NULL);
+		pthread_join((*philos)->thread, NULL);
 		printf("FILÓSOFO %d\n", i);
+		printf("THREAD: %lu\n", (*philos)->thread);
 		printf("HASHI LEFT: %p\n", (*philos)->left);
 		printf("HASHI RIGHT: %p\n\n", (*philos)->right);
 		(*philos) = (*philos)->next;
 		i++;
 	}
+	(*philos) = reset_list;
 }
 
 static void	init_philo(int argc, char **argv, t_philo *info, t_list **philos)

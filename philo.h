@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:50:26 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/04 15:27:55 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/05 13:01:07 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct	s_philo
 
 typedef struct	s_list
 {
+	pthread_t		thread;
 	struct s_list	*next;
 	struct s_list	*prev;
 	int				ph_nb;
@@ -45,5 +46,6 @@ typedef struct	s_list
 void	append_item(t_list **ptr, int ph_nb, t_philo *info);
 t_list	*create_elem(int ph_nb, t_philo *info);
 t_list	*list_last(t_list *begin_list);
+void    *routine(void *arg);
 
 #endif

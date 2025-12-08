@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wedos-sa <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 18:31:47 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/03 18:40:57 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/05 11:23:25 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,11 @@ int	ft_atoi(const char *string)
 		i++;
 	}
 	return (nb * sign);
+}
+
+void	*routine(void *arg)
+{
+	printf("THREAD CRIADA - ROUTINE FUNCTION\n\n");
+	(void)arg;
+	return (NULL);
 }
