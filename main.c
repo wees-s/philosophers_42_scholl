@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:49:00 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/05 13:00:52 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/09 14:23:34 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,18 +60,21 @@ static void init_table(t_philo *info, t_list **philos)
 
 	i = 0;
 	reset_list = (*philos);
+	pthread_mutex_init(&(*philos)->write_lock, NULL);
 	while (*philos)
 	{
 		if((*philos)->next == reset_list)
 		{
 			(*philos)->left = &info->hashi[i];
 			(*philos)->right = reset_list->left;
-			pthread_create(&(*philos)->thread, NULL, routine, NULL);
+			usleep(1);
+			pthread_create(&(*philos)->thread, NULL, routine, philos);
 			break ;
 		}
 		(*philos)->left = &info->hashi[i];
 		(*philos)->right = &info->hashi[i + 1];
-		pthread_create(&(*philos)->thread, NULL, routine, NULL);
+		usleep(1);
+		pthread_create(&(*philos)->thread, NULL, routine, philos);
 		(*philos) = (*philos)->next;
 		i++;
 	}
