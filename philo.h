@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:50:26 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/09 14:03:35 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/09 16:15:47 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct	s_philo
 	int				to_eat;
 	int				to_sleep;
 	pthread_mutex_t	*hashi;
+	pthread_mutex_t write_lock;
 }	t_philo;
 
 typedef struct	s_list
@@ -41,8 +42,6 @@ typedef struct	s_list
 	int				thinking;
 	pthread_mutex_t	*left;
 	pthread_mutex_t	*right;
-	pthread_mutex_t write_lock; //trava para printagem
-	
 } t_list;
 
 void	append_item(t_list **ptr, int ph_nb, t_philo *info);

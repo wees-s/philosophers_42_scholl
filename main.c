@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 15:49:00 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/09 14:23:34 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/09 16:30:59 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,35 @@ static void	join_all_thread(t_list **philos)
 	}
 }
 
+//GEPETECOOOOOOOOOOOOOOOOOO
+
+
+static void init_table(t_philo *info, t_list **philos)
+{
+    t_list *start = *philos;
+    t_list *curr = *philos;
+    int i = 0;
+    int n = info->philosophers;
+
+    // percorre e atribui left/right corretamente
+    while (1)
+    {
+        curr->left = &info->hashi[i];
+        curr->right = &info->hashi[(i + 1) % n];
+
+        // passe o nó atual (curr) — NÃO passe &philos
+        pthread_create(&curr->thread, NULL, routine, curr);
+
+        curr = curr->next;
+        i++;
+        if (curr == start)
+            break;
+    }
+}
+
+
+// GEPETECOOOOOOOOOO ^^^^^^^^^^^^^
+/*
 static void init_table(t_philo *info, t_list **philos)
 {
 	t_list *reset_list;
@@ -60,27 +89,68 @@ static void init_table(t_philo *info, t_list **philos)
 
 	i = 0;
 	reset_list = (*philos);
-	pthread_mutex_init(&(*philos)->write_lock, NULL);
+	pthread_mutex_init(&(*philos)->info->write_lock, NULL);
 	while (*philos)
 	{
 		if((*philos)->next == reset_list)
 		{
 			(*philos)->left = &info->hashi[i];
 			(*philos)->right = reset_list->left;
-			usleep(1);
+			//usleep(1000);
 			pthread_create(&(*philos)->thread, NULL, routine, philos);
 			break ;
 		}
 		(*philos)->left = &info->hashi[i];
 		(*philos)->right = &info->hashi[i + 1];
-		usleep(1);
+		//usleep(1000);
 		pthread_create(&(*philos)->thread, NULL, routine, philos);
 		(*philos) = (*philos)->next;
 		i++;
 	}
 	(*philos) = reset_list;
 }
+	*/
+//GPTECOOOOOOOOOOOOOOOOOOO
+static void init_philo(char **argv, t_philo *info, t_list **philos)
+{
+    int i;
+    int n;
 
+    n = ft_atoi(argv[1]);
+    info->philosophers = n;
+    info->to_die = ft_atoi(argv[2]);
+    info->to_eat = ft_atoi(argv[3]);
+    info->to_sleep = ft_atoi(argv[4]);
+
+    // inicializa mutex global para prints
+    pthread_mutex_init(&info->write_lock, NULL);
+
+    // aloca e inicializa os forks
+    info->hashi = malloc(sizeof(pthread_mutex_t) * n);
+    if (!info->hashi)
+        exit(EXIT_FAILURE);
+    i = 0;
+    while (i < n)
+    {
+        pthread_mutex_init(&info->hashi[i], NULL);
+        i++;
+    }
+
+    // cria a lista circular: cria o primeiro e depois append
+    *philos = create_elem(0, info);
+    (*philos)->eating = 0;
+    (*philos)->sleeping = 0;
+    (*philos)->thinking = 0;
+
+    i = 1;
+    while (i < n)
+    {
+        append_item(philos, i, info);
+        i++;
+    }
+}
+//GEPETECOOOOOOOOOOOOOOOO ^^^^^^^^^
+/*
 static void	init_philo(char **argv, t_philo *info, t_list **philos)
 {
 	int		i;
@@ -107,7 +177,7 @@ static void	init_philo(char **argv, t_philo *info, t_list **philos)
 	}
 	init_table(info, philos);
 }
-
+*/
 int	main(int argc, char **argv)
 {
 	t_philo info;
@@ -125,6 +195,7 @@ int	main(int argc, char **argv)
 	}
 	philos = (t_list *)malloc(sizeof(t_list) * ft_atoi(argv[1]));
 	init_philo(argv, &info, &philos);
+	init_table(&info, &philos);
 	join_all_thread(&philos);
 	return (0);
 }
