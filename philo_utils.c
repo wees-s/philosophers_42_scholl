@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/03 18:31:47 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/09 16:35:11 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/09 17:19:47 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,19 +40,19 @@ int	ft_atoi(const char *string)
 	return (nb * sign);
 }
 
-//GEPETECOOOOOOOOOOOOOOOOOOOOOOOO
+// //GEPETECOOOOOOOOOOOOOOOOOOOOOOOO
 
 
-void print_status(t_list *ph, const char *msg)
-{
-    pthread_mutex_lock(&ph->info->write_lock);
-    printf("filosofo: %d %s\n", ph->ph_nb, msg);
-    pthread_mutex_unlock(&ph->info->write_lock);
-}
+// void print_status(t_list *ph, const char *msg)
+// {
+//     pthread_mutex_lock(&ph->info->write_lock);
+//     printf("filosofo: %d %s\n", ph->ph_nb, msg);
+//     pthread_mutex_unlock(&ph->info->write_lock);
+// }
 
 
-//GEPETECOOOOOOOOOOOO ^^^^^^^^^^^^^
-/*
+// //GEPETECOOOOOOOOOOOO ^^^^^^^^^^^^^
+
 void	print_status(t_list **philos)
 {
 	pthread_mutex_lock(&(*philos)->info->write_lock);
@@ -71,71 +71,71 @@ void	print_status(t_list **philos)
 	printf("filosofo: %d soltou o HASHI da direita\n", (*philos)->ph_nb);
 	pthread_mutex_unlock(&(*philos)->info->write_lock);
 }
-*/
-
-//GEPETECOOOOOOOOOOOOOOOOOOOOOO
-
-void *routine(void *ptr)
-{
-    t_list *ph = (t_list *)ptr;
-
-    // pequeno desincronizador inicial para evitar contenda inicial brutal
-    if (ph->ph_nb % 2 != 0)
-        usleep(100);
-
-    while (1) // loop infinito — substitua por condição se precisar terminar
-    {
-        // pensar
-        // usleep(ph->info->to_sleep * 1000); // exemplo se quiser
-
-        if (ph->ph_nb % 2 == 0)
-        {
-            pthread_mutex_lock(ph->left);
-            print_status(ph, "pegou o HASHI da esquerda");
-
-            pthread_mutex_lock(ph->right);
-            print_status(ph, "pegou o HASHI da direita");
-
-            print_status(ph, "deveria comer agora");
-            usleep(ph->info->to_eat * 1000); // simula comer
-
-            pthread_mutex_unlock(ph->right);
-            print_status(ph, "soltou o HASHI da direita");
-
-            pthread_mutex_unlock(ph->left);
-            print_status(ph, "soltou o HASHI da esquerda");
-        }
-        else
-        {
-            // pequeno delay pra mishmash inicial
-            usleep(50);
-
-            pthread_mutex_lock(ph->right);
-            print_status(ph, "pegou o HASHI da direita");
-
-            pthread_mutex_lock(ph->left);
-            print_status(ph, "pegou o HASHI da esquerda");
-
-            print_status(ph, "deveria comer agora");
-            usleep(ph->info->to_eat * 1000);
-
-            pthread_mutex_unlock(ph->left);
-            print_status(ph, "soltou o HASHI da esquerda");
-
-            pthread_mutex_unlock(ph->right);
-            print_status(ph, "soltou o HASHI da direita");
-        }
-
-        // respirar pra evitar monopolização
-        usleep(500);
-    }
-    return NULL;
-}
 
 
-//GEPETECOOOOOOOO ^^^^^^^^
+// //GEPETECOOOOOOOOOOOOOOOOOOOOOO
 
-/*
+// void *routine(void *ptr)
+// {
+//     t_list *ph = (t_list *)ptr;
+
+//     // pequeno desincronizador inicial para evitar contenda inicial brutal
+//     if (ph->ph_nb % 2 != 0)
+//         usleep(100);
+
+//     while (1) // loop infinito — substitua por condição se precisar terminar
+//     {
+//         // pensar
+//         // usleep(ph->info->to_sleep * 1000); // exemplo se quiser
+
+//         if (ph->ph_nb % 2 == 0)
+//         {
+//             pthread_mutex_lock(ph->left);
+//             print_status(ph, "pegou o HASHI da esquerda");
+
+//             pthread_mutex_lock(ph->right);
+//             print_status(ph, "pegou o HASHI da direita");
+
+//             print_status(ph, "deveria comer agora");
+//             usleep(ph->info->to_eat * 1000); // simula comer
+
+//             pthread_mutex_unlock(ph->right);
+//             print_status(ph, "soltou o HASHI da direita");
+
+//             pthread_mutex_unlock(ph->left);
+//             print_status(ph, "soltou o HASHI da esquerda");
+//         }
+//         else
+//         {
+//             // pequeno delay pra mishmash inicial
+//             usleep(50);
+
+//             pthread_mutex_lock(ph->right);
+//             print_status(ph, "pegou o HASHI da direita");
+
+//             pthread_mutex_lock(ph->left);
+//             print_status(ph, "pegou o HASHI da esquerda");
+
+//             print_status(ph, "deveria comer agora");
+//             usleep(ph->info->to_eat * 1000);
+
+//             pthread_mutex_unlock(ph->left);
+//             print_status(ph, "soltou o HASHI da esquerda");
+
+//             pthread_mutex_unlock(ph->right);
+//             print_status(ph, "soltou o HASHI da direita");
+//         }
+
+//         // respirar pra evitar monopolização
+//         usleep(500);
+//     }
+//     return NULL;
+// }
+
+
+// //GEPETECOOOOOOOO ^^^^^^^^
+
+
 void    *routine(void *ptr)
 {
 	t_list **philos = (t_list **)ptr;
@@ -160,8 +160,6 @@ void    *routine(void *ptr)
 		pthread_mutex_unlock((*philos)->left);
 		pthread_mutex_unlock((*philos)->right);
 	}
-	usleep(20000);
 	i++;
 	return (NULL);
 }
-*/
