@@ -53,22 +53,23 @@ int	ft_atoi(const char *string)
 
 // //GEPETECOOOOOOOOOOOO ^^^^^^^^^^^^^
 
-void	print_status(t_list **philos)
+void	print_status(t_list **philos, long actual_time)
 {
+	actual_time = get_time() - (*philos)->info->start_time;
 	pthread_mutex_lock(&(*philos)->info->write_lock);
-	printf("filosofo: %d pegou o HASHI da esquerda\n", (*philos)->ph_nb);
+	printf("time: %lu filosofo: %d pegou o HASHI da esquerda\n", actual_time, (*philos)->ph_nb);
 	// pthread_mutex_unlock(&(*philos)->write_lock);
 	// pthread_mutex_lock(&(*philos)->write_lock);
-	printf("filosofo: %d pegou o HASHI da direita\n", (*philos)->ph_nb);
+	printf("time: %lu filosofo: %d pegou o HASHI da direita\n", actual_time, (*philos)->ph_nb);
 	// pthread_mutex_unlock(&(*philos)->write_lock);
 	// pthread_mutex_lock(&(*philos)->write_lock);
-	printf("filosofo: %d deveria comer agora\n", (*philos)->ph_nb);
+	printf("time: %lu filosofo: %d deveria comer agora\n", actual_time, (*philos)->ph_nb);
 	// pthread_mutex_unlock(&(*philos)->write_lock);
 	// pthread_mutex_lock(&(*philos)->write_lock);
-	printf("filosofo: %d soltou o HASHI da esquerda\n", (*philos)->ph_nb);
+	printf("time: %lu filosofo: %d soltou o HASHI da esquerda\n", actual_time, (*philos)->ph_nb);
 	// pthread_mutex_unlock(&(*philos)->write_lock);
 	// pthread_mutex_lock(&(*philos)->write_lock);
-	printf("filosofo: %d soltou o HASHI da direita\n", (*philos)->ph_nb);
+	printf("time: %lu filosofo: %d soltou o HASHI da direita\n", actual_time, (*philos)->ph_nb);
 	pthread_mutex_unlock(&(*philos)->info->write_lock);
 }
 
@@ -136,30 +137,51 @@ void	print_status(t_list **philos)
 // //GEPETECOOOOOOOO ^^^^^^^^
 
 
-void    *routine(void *ptr)
+void *routine(void *ptr)
 {
-	t_list **philos = (t_list **)ptr;
-	int i = 0;
-	//eu daria um lock aqui
-	if ((*philos)->ph_nb % 2 == 0)
-	{
-		//printf("filosofo %d tentando pegar garfo esquerdo\n", (*philos)->ph_nb);
-		pthread_mutex_lock((*philos)->left);
-		pthread_mutex_lock((*philos)->right);
-		print_status(philos);
-		pthread_mutex_unlock((*philos)->right);
-		pthread_mutex_unlock((*philos)->left);
-	}
-	else
-	{
-		//printf("filosofo %d tentando pegar garfo esquerdo\n", (*philos)->ph_nb);
-		usleep(1000);
-		pthread_mutex_lock((*philos)->right);
-		pthread_mutex_lock((*philos)->left);
-		print_status(philos);
-		pthread_mutex_unlock((*philos)->left);
-		pthread_mutex_unlock((*philos)->right);
-	}
-	i++;
-	return (NULL);
+    t_list *philo = (t_list *)ptr;
+    int     i = 0;
+    long    start;
+
+    while (1)
+    {
+        pthread_mutex_lock(&philo->info->start_lock);
+        start = philo->info->start_time;
+        pthread_mutex_unlock(&philo->info->start_lock);
+
+        if (start != 0)
+            break;
+        usleep(50);
+    }
+
+    if (philo->ph_nb % 2 == 0)
+    {
+        pthread_mutex_lock(philo->left);
+        pthread_mutex_lock(philo->right);
+        print_status(&philo, start);   // se sua função espera **t_list **, você passa &philo
+        pthread_mutex_unlock(philo->right);
+        pthread_mutex_unlock(philo->left);
+
+        pthread_mutex_lock(&philo->info->write_lock);
+        printf("filosofo: %d está dormindo\n", philo->ph_nb);
+        pthread_mutex_unlock(&philo->info->write_lock);
+        usleep(10000);
+    }
+    else
+    {
+        usleep(1000);
+        pthread_mutex_lock(philo->right);
+        pthread_mutex_lock(philo->left);
+        print_status(&philo, start);
+        pthread_mutex_unlock(philo->left);
+        pthread_mutex_unlock(philo->right);
+
+        pthread_mutex_lock(&philo->info->write_lock);
+        printf("filosofo: %d está dormindo\n", philo->ph_nb);
+        pthread_mutex_unlock(&philo->info->write_lock);
+        usleep(10000);
+    }
+
+    i++;
+    return NULL;
 }

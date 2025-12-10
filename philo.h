@@ -17,6 +17,8 @@
 # include <unistd.h>
 # include <pthread.h>
 # include <stdlib.h>
+# include <sys/time.h>
+
 
 int		ft_atoi(const char *string);
 
@@ -28,6 +30,8 @@ typedef struct	s_philo
 	int				to_sleep;
 	pthread_mutex_t	*hashi;
 	pthread_mutex_t write_lock;
+	long			start_time;
+	pthread_mutex_t	start_lock;
 }	t_philo;
 
 typedef struct	s_list
@@ -44,6 +48,7 @@ typedef struct	s_list
 	pthread_mutex_t	*right;
 } t_list;
 
+long	get_time(void);
 void	append_item(t_list **ptr, int ph_nb, t_philo *info);
 t_list	*create_elem(int ph_nb, t_philo *info);
 t_list	*list_last(t_list *begin_list);

@@ -84,31 +84,40 @@ static void	join_all_thread(t_list **philos)
 
 static void init_table(t_philo *info, t_list **philos)
 {
-	t_list *reset_list;
-	int		i;
+    t_list *reset_list;
+    t_list *node;
+    int     i;
 
-	i = 0;
-	reset_list = (*philos);
-	pthread_mutex_init(&(*philos)->info->write_lock, NULL);
-	while (*philos)
-	{
-		if((*philos)->next == reset_list)
-		{
-			(*philos)->left = &info->hashi[i];
-			(*philos)->right = reset_list->left;
-			usleep(1000);
-			pthread_create(&(*philos)->thread, NULL, routine, philos);
-			break ;
-		}
-		(*philos)->left = &info->hashi[i];
-		(*philos)->right = &info->hashi[i + 1];
-		usleep(1000);
-		pthread_create(&(*philos)->thread, NULL, routine, philos);
-		(*philos) = (*philos)->next;
-		i++;
-	}
-	(*philos) = reset_list;
+    reset_list = *philos;
+    node = *philos;
+    i = 0;
+
+    pthread_mutex_init(&info->write_lock, NULL);
+
+    while (node)
+    {
+        // Set garfos
+        if (node->next == reset_list)
+        {
+            node->left = &info->hashi[i];
+            node->right = reset_list->left;
+        }
+        else
+        {
+            node->left = &info->hashi[i];
+            node->right = &info->hashi[i + 1];
+        }
+
+        // Cria a thread passando o FILÓSOFO individual
+        pthread_create(&node->thread, NULL, routine, node);
+
+        node = node->next;
+        if (node == reset_list)
+            break;
+        i++;
+    }
 }
+
 
 // //GPTECOOOOOOOOOOOOOOOOOOO
 // static void init_philo(char **argv, t_philo *info, t_list **philos)
@@ -178,6 +187,15 @@ static void	init_philo(char **argv, t_philo *info, t_list **philos)
 	init_table(info, philos);
 }
 
+long	get_time(void)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+
 int	main(int argc, char **argv)
 {
 	t_philo info;
@@ -193,9 +211,18 @@ int	main(int argc, char **argv)
 		write(2, "ERROR: Try: ./philo 5 20 5 5\n", 30);
 		return (0);
 	}
+	pthread_mutex_lock(&info.start_lock);
+	info.start_time = 0;
+	pthread_mutex_unlock(&info.start_lock);
 	philos = (t_list *)malloc(sizeof(t_list) * ft_atoi(argv[1]));
 	init_philo(argv, &info, &philos);
 	init_table(&info, &philos);
+
+	// Agora que TODAS as threads existem:
+	pthread_mutex_lock(&info.start_lock);
+	info.start_time = get_time(); // seu timestamp base
+	pthread_mutex_unlock(&info.start_lock);
+
 	join_all_thread(&philos);
 	return (0);
 }
