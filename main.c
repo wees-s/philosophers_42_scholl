@@ -1,157 +1,105 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/02 15:49:00 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/09 17:32:18 by wedos-sa         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "philosophers.h"
 
-#include "philo.h"
-
-static int	valid_input(char **argv)
+long	get_time(void)
 {
-	int	i;
-	int	j;
+	struct timeval	time;
 
-	i = 1;
-	while(argv[i])
-	{
-		j = 0;
-		while (argv[i][j])
-		{
-			if (!(argv[i][j] >= '0' && argv[i][j] <= '9'))
-			{
-				write(2, "Only DIGITS are accepted.\n", 27);
-				exit(EXIT_FAILURE);
-			}
-			j++;
-		}
-		i++;
-	}
-	return (1);
+	gettimeofday(&time, NULL);
+	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-static void	join_all_thread(t_list **philos)
+void	join_all_threads(t_node **nodes)
 {
-	t_list	*start;
-	t_list	*curr;
+	t_node	*start;
+	t_node	*curr;
 
-	start = (*philos);
-	curr = (*philos);
+	start = (*nodes);
+	curr = (*nodes);
 	if (!curr)
 		return ;
 	while (1)
 	{
-		pthread_join(curr->thread, NULL);
+		pthread_join(curr->thread_id, NULL);
 		curr = curr->next;
 		if (curr == start)
 			break ;
 	}
 }
 
-static void init_table(t_philo *info, t_list **philos)
+int main(int argc, char **argv)
 {
-    t_list *reset_list;
-    t_list *node;
-    int     i;
+    t_rules rules;
+    t_node  *nodes;
 
-    reset_list = *philos;
-    node = *philos;
-    i = 0;
-
-    pthread_mutex_init(&info->write_lock, NULL);
-
-    while (node)
+    if (argc == 5)
     {
-        // Set garfos
-        if (node->next == reset_list)
-        {
-            node->left = &info->hashi[i];
-            node->right = reset_list->left;
-        }
-        else
-        {
-            node->left = &info->hashi[i];
-            node->right = &info->hashi[i + 1];
-        }
-
-        // Cria a thread passando o FILÓSOFO individual
-        pthread_create(&node->thread, NULL, routine, node);
-
-        node = node->next;
-        if (node == reset_list)
-            break;
-        i++;
+        if (ft_atoi(argv[1]) < 1 || !valid_input(argv))
+            print_error(argv);
     }
-}
-
-static void	init_philo(char **argv, t_philo *info, t_list **philos)
-{
-	int		i;
-	int		j;
-
-	j = 0;
-	i = 1;
-	info->philosophers = ft_atoi(argv[1]);
-	info->to_die = ft_atoi(argv[2]);
-	info->to_eat = ft_atoi(argv[3]);
-	info->to_sleep = ft_atoi(argv[4]);
-	(*philos) = create_elem(0, info);
-	(*philos)->eating = 0;
-	(*philos)->sleeping = 0;
-	(*philos)->thinking = 0;
-	info->hashi = malloc(sizeof(pthread_mutex_t) * info->philosophers);
-	pthread_mutex_init(&info->hashi[j], NULL);
-	while (i < ft_atoi(argv[1]))
-	{
-		pthread_mutex_init(&info->hashi[j], NULL);
-		append_item(philos, i, info);
-		i++;
-		j++;
-	}
-	init_table(info, philos);
-}
-
-long	get_time(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
-}
+    else
+    {
+        printf("Error: Philosophers need 4 arguments.\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("teste1\n");
+    init_philo(&rules, argv, &nodes);
+    threads_and_mutexes(&nodes);
+    nodes->rules->start_time = get_time();
+    join_all_threads(&nodes);
 
 
-int	main(int argc, char **argv)
-{
-	t_philo info;
-	t_list	*philos;
 
-	if (argc != 5 || !valid_input(argv) || ft_atoi(argv[1]) < 1)
-	{
-		if (ft_atoi(argv[1]) < 1)
-		{
-			write(2, "ERROR: Minimum 1 philosopher\n", 30);
-			return (1);
-		}
-		write(2, "ERROR: Try: ./philo 5 20 5 5\n", 30);
-		return (0);
-	}
-	pthread_mutex_lock(&info.start_lock);
-	info.start_time = 0;
-	pthread_mutex_unlock(&info.start_lock);
-	philos = (t_list *)malloc(sizeof(t_list) * ft_atoi(argv[1]));
-	init_philo(argv, &info, &philos);
-	//init_table(&info, &philos);
 
-	// Agora que TODAS as threads existem:
-	pthread_mutex_lock(&info.start_lock);
-	info.start_time = get_time(); // seu timestamp base
-	pthread_mutex_unlock(&info.start_lock);
 
-	join_all_thread(&philos);
-	return (0);
+
+
+
+
+    //GEPETECO
+    t_node *tmp = nodes;
+    int     first = 1;
+
+    if (!tmp)
+    {
+        printf("Lista vazia.\n");
+        return (0);
+    }
+
+    while (tmp && (tmp != nodes || first))
+    {
+        first = 0;
+
+        printf("=== FILÓSOFO %d ===\n", tmp->number);
+        printf("thread_id:        %p\n", (void *)tmp->thread_id);
+        printf("rules:            %p\n", (void *)tmp->rules);
+        printf("mutex struct:     %p\n", (void *)tmp->mutex);
+
+        if (tmp->left)
+            printf("left fork:        %p\n", (void *)tmp->left);
+        else
+            printf("left fork:        NULL\n");
+
+        if (tmp->right)
+            printf("right fork:       %p\n", (void *)tmp->right);
+        else
+            printf("right fork:       NULL\n");
+
+        printf("next:             %p\n", (void *)tmp->next);
+        printf("prev:             %p\n", (void *)tmp->prev);
+
+        printf("---------------------------\n");
+
+        tmp = tmp->next;
+    }
+    //GEPETECO
+
+
+
+
+
+
+
+
+
+    return (0);
 }
