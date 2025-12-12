@@ -11,6 +11,9 @@
 typedef struct s_mutex
 {
     pthread_mutex_t	*hashi;
+    pthread_mutex_t	write_lock;
+    pthread_mutex_t	meal_lock;
+    pthread_mutex_t time_lock;
 }   t_mutex;
 
 
@@ -18,11 +21,15 @@ typedef struct s_mutex
 typedef struct s_rules
 {
     //quantidade de filósofos
+    int             dead;
     int             ph_quantity;
     long            time_to_die;
     long            time_to_eat;
     long            time_to_sleep;
+    long            time_to_think;
     long            start_time;
+    long            real_time;
+    pthread_t       monitor;
 }   t_rules;
 
 //philosopher_node
@@ -34,6 +41,8 @@ typedef struct s_node
     pthread_mutex_t	*left;//hashi da esquerda
 	pthread_mutex_t	*right;//hashi da direita
     int             number;//número/nome do filósofo
+    long            last_meal;
+    int             meals;
 	struct s_node	*next;
 	struct s_node	*prev;
 }   t_node;
@@ -54,10 +63,20 @@ int     valid_input(char **argv);
 //philosophers
 void    init_philo(t_rules *rules, char **argv, t_node **nodes);
 void    threads_and_mutexes(t_node **nodes);
-void    *routine(void *ptr);
 
 //main
 long	get_time(void);
 void	join_all_threads(t_node **nodes);
+
+//routine
+void    *routine(void *ptr);
+void    *monitor(void *head);
+
+//routine_utils
+void    take_hashis(t_node *ptr);
+void    put_hashis(t_node *ptr);
+void    eat(t_node *ptr);
+void    philosophers_sleep(t_node *ptr);
+void    think(t_node *ptr);
 
 #endif
