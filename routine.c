@@ -26,7 +26,6 @@ static void    eat_monitor(t_node *ptr)
     }
     printf("|==================================================|\n");
     pthread_mutex_destroy(&ptr->mutex->write_lock);
-    free_list(&ptr);
     exit(EXIT_SUCCESS);
 }
 
@@ -51,8 +50,6 @@ void    *monitor(void *head)
                 printf(" %ldMS | FILOSOFO %d MORREU ☠️\n", get_time() - ptr->rules->real_time, ptr->number);
                 pthread_mutex_destroy(&ptr->mutex->write_lock);
                 ptr->rules->dead = 1;
-                free_list(&ptr);
-                //return(NULL);
             }
             pthread_mutex_unlock(&ptr->mutex->meal_lock);
             ptr = ptr->next;
