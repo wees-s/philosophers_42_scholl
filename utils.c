@@ -27,7 +27,7 @@ int	ft_atoi(const char *string)
 	}
 	return (nb * sign);
 }
-
+/*
 void	free_list(t_node **begin_list)
 {
 	t_node	*to_free;
@@ -42,8 +42,49 @@ void	free_list(t_node **begin_list)
 		*begin_list = (*begin_list)->next;
 		to_free->next = NULL;
 		to_free->prev = NULL;
-
-		free(to_free);
+		if (to_free)
+			free(to_free);
 	}
+	*begin_list = NULL;
+}
+	*/
+void	free_list(t_node **begin_list)
+{
+	t_node	*current;
+	t_node	*to_free;
+	t_node	*start;
+	int		i;
+	int		total_nodes;
+
+	if (!begin_list || !*begin_list)
+		return ;
+	
+	start = *begin_list;
+	total_nodes = start->rules->ph_quantity;
+	
+	// Salva ponteiros antes de quebrar a lista
+	current = start->next;
+	
+	// Libera recursos compartilhados
+	if (start->mutex)
+	{
+		if (start->mutex->hashi)
+			free(start->mutex->hashi);
+		free(start->mutex);
+	}
+	
+	// Libera primeiro nó
+	free(start);
+	
+	// Libera resto da lista
+	i = 1;
+	while (i < total_nodes && current)
+	{
+		to_free = current;
+		current = current->next;
+		free(to_free);
+		i++;
+	}
+	
 	*begin_list = NULL;
 }

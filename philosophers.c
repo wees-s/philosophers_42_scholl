@@ -28,7 +28,7 @@ void    threads_and_mutexes(t_node **nodes)
         index_mutex++;
     }
 }
-
+/*
 void    init_philo(t_rules *rules, char **argv, t_node **nodes)
 {
     int     philosopher_index;
@@ -57,6 +57,58 @@ void    init_philo(t_rules *rules, char **argv, t_node **nodes)
         pthread_mutex_init(&mutex->hashi[hashi_index], NULL);
         append_item(nodes, philosopher_index, rules, mutex);
         hashi_index++;
+        philosopher_index++;
+    }
+}
+    */
+void init_philo(t_rules *rules, char **argv, t_node **nodes)
+{
+    int     philosopher_index;
+    int     ph_nb;
+    int     hashi_index;
+    t_mutex *mutex;
+    
+    rules->start_time = 0;
+    rules->dead = 0;
+    mutex = malloc(sizeof(t_mutex));
+    if (!mutex)
+        exit(EXIT_FAILURE);
+        
+    rules->ph_quantity = ft_atoi(argv[1]);
+    ph_nb = rules->ph_quantity;
+    
+    mutex->hashi = malloc(sizeof(pthread_mutex_t) * ph_nb);
+    if (!mutex->hashi)
+    {
+        free(mutex);
+        exit(EXIT_FAILURE);
+    }
+    
+    rules->time_to_die = ft_atoi(argv[2]);
+    rules->time_to_eat = ft_atoi(argv[3]);
+    rules->time_to_sleep = ft_atoi(argv[4]);
+    
+    if (argv[5])
+        rules->max_meals = ft_atoi(argv[5]);
+    else
+        rules->max_meals = -1;
+    
+    // Inicializa mutexes dos hashis
+    hashi_index = 0;
+    while (hashi_index < ph_nb)
+    {
+        pthread_mutex_init(&mutex->hashi[hashi_index], NULL);
+        hashi_index++;
+    }
+    
+    // Cria lista circular
+    philosopher_index = 1;
+    (*nodes) = create_elem(philosopher_index, rules, mutex);
+    philosopher_index++;
+    
+    while (philosopher_index <= ph_nb)
+    {
+        append_item(nodes, philosopher_index, rules, mutex);
         philosopher_index++;
     }
 }

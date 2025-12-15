@@ -21,6 +21,7 @@ typedef struct s_mutex
 //info_philosophers
 typedef struct s_rules
 {
+    int             final_meal;
     int             dead;
     int             ph_quantity;
     int             max_meals;
