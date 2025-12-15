@@ -1,3 +1,5 @@
+#include "philosophers.h"
+
 int	ft_atoi(const char *string)
 {
 	int					i;
@@ -24,4 +26,24 @@ int	ft_atoi(const char *string)
 		i++;
 	}
 	return (nb * sign);
+}
+
+void	free_list(t_node **begin_list)
+{
+	t_node	*to_free;
+
+	if (!begin_list || !*begin_list)
+		return ;
+	free((*begin_list)->mutex->hashi);
+	free((*begin_list)->mutex);
+	while (*begin_list)
+	{
+		to_free = *begin_list;
+		*begin_list = (*begin_list)->next;
+		to_free->next = NULL;
+		to_free->prev = NULL;
+
+		free(to_free);
+	}
+	*begin_list = NULL;
 }

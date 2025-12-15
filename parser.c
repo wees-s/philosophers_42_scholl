@@ -1,5 +1,5 @@
 #include "philosophers.h"
-//validando números
+
 int valid_input(char **argv)
 {
 	int	i;
@@ -22,7 +22,7 @@ int valid_input(char **argv)
 	}
 	return (1);
 }
-//print de erros
+
 void    print_error(char **argv)
 {
     if (ft_atoi(argv[1]) < 1)

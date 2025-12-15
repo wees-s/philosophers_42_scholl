@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     long    start;
     t_node  *temp;
 
-    if (argc == 5)
+    if (argc == 5 || argc == 6)
     {
         if (ft_atoi(argv[1]) < 1 || !valid_input(argv))
             print_error(argv);
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
     init_philo(&rules, argv, &nodes);
-    threads_and_mutexes(&nodes);
+    threads_and_mutexes(&nodes); //THREADS E MUTEXES CRIADOS
     nodes->rules->start_time = get_time();
     temp = nodes;
     first = 1;
@@ -59,63 +59,8 @@ int main(int argc, char **argv)
         pthread_mutex_unlock(&temp->mutex->meal_lock);
         temp = temp->next;
     }
-    pthread_create(&nodes->rules->monitor, NULL, monitor, nodes);
+    pthread_create(&nodes->rules->monitor, NULL, monitor, nodes); //MONITOR CRIADO
     pthread_join(nodes->rules->monitor, NULL);
     join_all_threads(&nodes);
-
-
-
-
-
-
-
-
-/*
-    //GEPETECO
-    t_node *tmp = nodes;
-    int     first = 1;
-
-    if (!tmp)
-    {
-        printf("Lista vazia.\n");
-        return (0);
-    }
-
-    while (tmp && (tmp != nodes || first))
-    {
-        first = 0;
-
-        printf("=== FILÓSOFO %d ===\n", tmp->number);
-        printf("thread_id:        %p\n", (void *)tmp->thread_id);
-        printf("rules:            %p\n", (void *)tmp->rules);
-        printf("mutex struct:     %p\n", (void *)tmp->mutex);
-
-        if (tmp->left)
-            printf("left fork:        %p\n", (void *)tmp->left);
-        else
-            printf("left fork:        NULL\n");
-
-        if (tmp->right)
-            printf("right fork:       %p\n", (void *)tmp->right);
-        else
-            printf("right fork:       NULL\n");
-
-        printf("next:             %p\n", (void *)tmp->next);
-        printf("prev:             %p\n", (void *)tmp->prev);
-
-        printf("---------------------------\n");
-
-        tmp = tmp->next;
-    }
-    //GEPETECO
-
-*/
-
-
-
-
-
-
-
     return (0);
 }

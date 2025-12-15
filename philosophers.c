@@ -46,6 +46,8 @@ void    init_philo(t_rules *rules, char **argv, t_node **nodes)
     rules->time_to_die = ft_atoi(argv[2]);
     rules->time_to_eat = ft_atoi(argv[3]);
     rules->time_to_sleep = ft_atoi(argv[4]);
+    if (argv[5])
+        rules->max_meals = ft_atoi(argv[5]);
     (*nodes) = create_elem(philosopher_index, rules, mutex);
     pthread_mutex_init(&mutex->hashi[hashi_index], NULL);
     hashi_index++;
