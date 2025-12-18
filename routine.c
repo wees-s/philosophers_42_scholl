@@ -21,7 +21,6 @@ void	eat_monitor(t_node *ptr)
 			break ;
 	}
 	philo_eat_print(ptr, temp);
-	pthread_mutex_unlock(&ptr->mutex->write_lock);
 	pthread_mutex_lock(&ptr->mutex->dead);
 	ptr->rules->dead = 1;
 	pthread_mutex_unlock(&ptr->mutex->dead);

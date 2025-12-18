@@ -17,6 +17,7 @@ void	philo_eat_print(t_node *ptr, t_node *temp)
 		i++;
 	}
 	printf("|==================================================|\n");
+	pthread_mutex_unlock(&ptr->mutex->write_lock);
 }
 
 static void	print_dead(t_node *ptr)

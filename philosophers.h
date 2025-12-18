@@ -28,7 +28,6 @@ typedef struct s_rules
 	long		time_to_die;
 	long		time_to_eat;
 	long		time_to_sleep;
-	long		time_to_think;
 	long		start_time;
 	long		real_time;
 	pthread_t	monitor;

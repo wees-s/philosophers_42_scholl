@@ -24,7 +24,7 @@ void	p_sleep(t_node *ptr, int flag)
 	}
 	else if (flag == 2)
 	{
-		while (get_time() - start < ptr->rules->time_to_think)
+		while (get_time() - start < ptr->rules->time_to_sleep)
 		{
 			if (ptr->rules->dead == 1)
 				break ;
