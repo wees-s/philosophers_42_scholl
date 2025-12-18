@@ -40,7 +40,7 @@ void	*monitor(void *head)
 		ptr = begin_list;
 		if (monitor_looping(ptr, begin_list) == NULL)
 			return (NULL);
-		usleep(1000);
+		usleep(8000);
 	}
 	return (NULL);
 }
@@ -81,7 +81,7 @@ void	wait_start(t_node *node)
 
 void	*routine(void *ptr)
 {
-	t_node	*node;
+	t_node *node;
 
 	node = (t_node *)ptr;
 	if (node->rules->ph_quantity == 1)
@@ -92,16 +92,22 @@ void	*routine(void *ptr)
 	if (node->number % 2 != 0)
 		usleep(500);
 	wait_start(node);
-	while (!node->rules->dead)
+	
+	while (!is_dead(node))
 	{
 		take_hashis(node);
+		if (is_dead(node))
+		{
+			put_hashis(node);
+			break;
+		}
 		eat(node);
 		put_hashis(node);
-		if (node->rules->dead)
-			break ;
+		if (is_dead(node))
+			break;
 		philosophers_sleep(node);
-		if (node->rules->dead)
-			break ;
+		if (is_dead(node))
+			break;
 		think(node);
 	}
 	return (NULL);

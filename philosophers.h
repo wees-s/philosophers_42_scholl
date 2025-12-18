@@ -92,6 +92,7 @@ void	take_left_hashi(t_node *ptr);
 
 //free_all
 void	free_list(t_node **begin_list);
+void	destroy_mutexes(t_node *nodes);
 
 typedef struct s_free
 {
@@ -124,5 +125,8 @@ typedef struct s_main
 void	init_main(t_node *nodes);
 void	init_check(int argc, char **argv);
 void	init_timers(t_main *p);
+
+//dead_verification
+int		is_dead(t_node *ptr);
 
 #endif

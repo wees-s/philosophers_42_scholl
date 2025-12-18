@@ -45,7 +45,9 @@ void	*monitor_looping(t_node *ptr, t_node *begin_list)
 		{
 			pthread_mutex_unlock(&ptr->mutex->meal_lock);
 			print_dead(ptr);
+			pthread_mutex_lock(&ptr->mutex->dead);
 			ptr->rules->dead = 1;
+			pthread_mutex_unlock(&ptr->mutex->dead);
 			return (NULL);
 		}
 		pthread_mutex_unlock(&ptr->mutex->meal_lock);
