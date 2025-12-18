@@ -73,13 +73,12 @@ void	destroy_mutexes(t_node *nodes)
 int main(int argc, char **argv)
 {
     t_main p;
-    
+
     init_check(argc, argv);
     init_philo(&p.rules, argv, &p.nodes);
     init_main(p.nodes);
     init_timers(&p);
     threads_and_mutexes(&p.nodes);
-    
     if (p.nodes->rules->ph_quantity == 1)
         pthread_join(p.nodes->thread_id, NULL);
     else
