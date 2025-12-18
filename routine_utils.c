@@ -20,9 +20,12 @@ void	eat(t_node *ptr)
 	ptr->last_meal = get_time();
 	pthread_mutex_unlock(&ptr->mutex->meal_lock);
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %luMS ", get_time() - ptr->rules->real_time);
-	printf("|🥢🍜 FILÓSOFO %d ESTÁ COMENDO\n", ptr->number);
-	printf("|==================================================|\n");
+	if (!ptr->rules->dead)
+	{
+		printf(" %luMS ", get_time() - ptr->rules->real_time);
+		printf("|🥢🍜 FILÓSOFO %d ESTÁ COMENDO\n", ptr->number);
+		printf("|==================================================|\n");
+	}
 	pthread_mutex_unlock(&ptr->mutex->write_lock);
 	p_sleep(ptr, 1);
 	ptr->meals++;
@@ -31,9 +34,12 @@ void	eat(t_node *ptr)
 void	philosophers_sleep(t_node *ptr)
 {
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %luMS ", get_time() - ptr->rules->real_time);
-	printf("|😴💤 FILÓSOFO %d ESTÁ DORMINDO\n", ptr->number);
-	printf("|==================================================|\n");
+	if (!ptr->rules->dead)
+	{
+		printf(" %luMS ", get_time() - ptr->rules->real_time);
+		printf("|😴💤 FILÓSOFO %d ESTÁ DORMINDO\n", ptr->number);
+		printf("|==================================================|\n");
+	}
 	pthread_mutex_unlock(&ptr->mutex->write_lock);
 	p_sleep(ptr, 2);
 }
@@ -41,8 +47,11 @@ void	philosophers_sleep(t_node *ptr)
 void	think(t_node *ptr)
 {
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %luMS ", get_time() - ptr->rules->real_time);
-	printf("|🤯💬 FILÓSOFO %d ESTÁ PENSANDO\n", ptr->number);
-	printf("|==================================================|\n");
+	if (!ptr->rules->dead)
+	{
+		printf(" %luMS ", get_time() - ptr->rules->real_time);
+		printf("|🤯💬 FILÓSOFO %d ESTÁ PENSANDO\n", ptr->number);
+		printf("|==================================================|\n");
+	}
 	pthread_mutex_unlock(&ptr->mutex->write_lock);
 }

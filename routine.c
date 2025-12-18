@@ -49,13 +49,19 @@ void	one_philosopher(t_node *node)
 {
 	pthread_mutex_lock(node->left);
 	pthread_mutex_lock(&node->mutex->write_lock);
-	printf(" %luMS |🥢 FILÓSOFO 1 PEGOU UM HASHI\n",
-		get_time() - node->rules->real_time);
+	if (!node->rules->dead)
+	{
+		printf(" %luMS |🥢 FILÓSOFO 1 PEGOU UM HASHI\n",
+			get_time() - node->rules->real_time);
+	}
 	pthread_mutex_unlock(&node->mutex->write_lock);
 	usleep(node->rules->time_to_die * 1000);
 	pthread_mutex_lock(&node->mutex->write_lock);
-	printf(" %luMS | FILOSOFO 1 MORREU ☠️\n",
-		get_time() - node->rules->real_time);
+	if (!node->rules->dead)
+	{
+		printf(" %luMS | FILOSOFO 1 MORREU ☠️\n",
+			get_time() - node->rules->real_time);
+	}
 	pthread_mutex_unlock(&node->mutex->write_lock);
 	pthread_mutex_unlock(node->left);
 }
