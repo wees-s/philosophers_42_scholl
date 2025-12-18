@@ -27,22 +27,27 @@ void	eat_monitor(t_node *ptr)
 	return ;
 }
 
-void	*monitor(void *head)
+void *monitor(void *head)
 {
-	t_node	*ptr;
-	t_node	*begin_list;
+    t_node *ptr;
+    t_node *begin_list;
 
-	ptr = (t_node *)head;
-	begin_list = ptr;
-	ptr->rules->dead = 0;
-	while (!ptr->rules->dead)
-	{
-		ptr = begin_list;
-		if (monitor_looping(ptr, begin_list) == NULL)
-			return (NULL);
-		usleep(8000);
-	}
-	return (NULL);
+    ptr = (t_node *)head;
+    begin_list = ptr;
+    
+    // ✅ PROTEGE A INICIALIZAÇÃO
+    pthread_mutex_lock(&ptr->mutex->dead);
+    ptr->rules->dead = 0;
+    pthread_mutex_unlock(&ptr->mutex->dead);
+    
+    while (!is_dead(ptr))
+    {
+        ptr = begin_list;
+        if (monitor_looping(ptr, begin_list) == NULL)
+            return (NULL);
+        usleep(1000);
+    }
+    return (NULL);
 }
 
 void	one_philosopher(t_node *node)
@@ -79,36 +84,46 @@ void	wait_start(t_node *node)
 	}
 }
 
-void	*routine(void *ptr)
+void *routine(void *ptr)
 {
-	t_node *node;
+    t_node *node;
+    int has_forks;  // ✅ Flag para rastrear se pegou os hashis
 
-	node = (t_node *)ptr;
-	if (node->rules->ph_quantity == 1)
-	{
-		one_philosopher(node);
-		return (NULL);
-	}
-	if (node->number % 2 != 0)
-		usleep(500);
-	wait_start(node);
-	
-	while (!is_dead(node))
-	{
-		take_hashis(node);
-		if (is_dead(node))
-		{
-			put_hashis(node);
-			break;
-		}
-		eat(node);
-		put_hashis(node);
-		if (is_dead(node))
-			break;
-		philosophers_sleep(node);
-		if (is_dead(node))
-			break;
-		think(node);
-	}
-	return (NULL);
+    node = (t_node *)ptr;
+    if (node->rules->ph_quantity == 1)
+    {
+        one_philosopher(node);
+        return (NULL);
+    }
+    if (node->number % 2 != 0)
+        usleep(500);
+    wait_start(node);
+    
+    while (!is_dead(node))
+    {
+        has_forks = 0;  // ✅ Reseta a flag
+        
+        if (take_hashis(node))  // ✅ Retorna 1 se conseguiu pegar os hashis
+            has_forks = 1;
+        
+        if (is_dead(node))
+        {
+            if (has_forks)  // ✅ Só libera se conseguiu pegar
+                put_hashis(node);
+            break;
+        }
+        
+        eat(node);
+        put_hashis(node);
+        
+        if (is_dead(node))
+            break;
+        
+        philosophers_sleep(node);
+        if (is_dead(node))
+            break;
+        
+        think(node);
+    }
+    return (NULL);
 }

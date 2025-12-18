@@ -82,13 +82,13 @@ void	*monitor(void *head);
 void	one_philosopher(t_node *node);
 
 //routine_utils
-void	take_hashis(t_node *ptr);
+int		take_hashis(t_node *ptr);
 void	put_hashis(t_node *ptr);
 void	eat(t_node *ptr);
 void	philosophers_sleep(t_node *ptr);
 void	think(t_node *ptr);
-void	take_right_hashi(t_node *ptr);
-void	take_left_hashi(t_node *ptr);
+int		take_right_hashi(t_node *ptr);
+int		take_left_hashi(t_node *ptr);
 
 //free_all
 void	free_list(t_node **begin_list);

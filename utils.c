@@ -55,14 +55,14 @@ void	free_list(t_node **begin_list)
 	*begin_list = NULL;
 }
 
-void take_right_hashi(t_node *ptr)
+int take_right_hashi(t_node *ptr)
 {
     pthread_mutex_lock(ptr->right);
     
     if (is_dead(ptr))
     {
         pthread_mutex_unlock(ptr->right);
-        return;
+        return (0);  // ✅ Retorna 0 = não conseguiu pegar os hashis
     }
     
     pthread_mutex_lock(&ptr->mutex->write_lock);
@@ -74,13 +74,19 @@ void take_right_hashi(t_node *ptr)
     }
     pthread_mutex_unlock(&ptr->mutex->write_lock);
     
+    if (is_dead(ptr))
+    {
+        pthread_mutex_unlock(ptr->right);
+        return (0);  // ✅ Retorna 0
+    }
+    
     pthread_mutex_lock(ptr->left);
     
     if (is_dead(ptr))
     {
         pthread_mutex_unlock(ptr->left);
         pthread_mutex_unlock(ptr->right);
-        return;
+        return (0);  // ✅ Retorna 0
     }
     
     pthread_mutex_lock(&ptr->mutex->write_lock);
@@ -91,16 +97,18 @@ void take_right_hashi(t_node *ptr)
         printf("|==================================================|\n");
     }
     pthread_mutex_unlock(&ptr->mutex->write_lock);
+    
+    return (1);  // ✅ Retorna 1 = sucesso
 }
 
-void take_left_hashi(t_node *ptr)
+int take_left_hashi(t_node *ptr)
 {
     pthread_mutex_lock(ptr->left);
     
     if (is_dead(ptr))
     {
         pthread_mutex_unlock(ptr->left);
-        return;
+        return (0);
     }
     
     pthread_mutex_lock(&ptr->mutex->write_lock);
@@ -112,13 +120,19 @@ void take_left_hashi(t_node *ptr)
     }
     pthread_mutex_unlock(&ptr->mutex->write_lock);
     
+    if (is_dead(ptr))
+    {
+        pthread_mutex_unlock(ptr->left);
+        return (0);
+    }
+    
     pthread_mutex_lock(ptr->right);
     
     if (is_dead(ptr))
     {
         pthread_mutex_unlock(ptr->right);
         pthread_mutex_unlock(ptr->left);
-        return;
+        return (0);
     }
     
     pthread_mutex_lock(&ptr->mutex->write_lock);
@@ -129,14 +143,16 @@ void take_left_hashi(t_node *ptr)
         printf("|==================================================|\n");
     }
     pthread_mutex_unlock(&ptr->mutex->write_lock);
+    
+    return (1);
 }
 
 int is_dead(t_node *ptr)
 {
-    int dead;
-    
-    pthread_mutex_lock(&ptr->mutex->dead);
-    dead = ptr->rules->dead;
-    pthread_mutex_unlock(&ptr->mutex->dead);
-    return (dead);
+	int dead;
+	
+	pthread_mutex_lock(&ptr->mutex->dead);
+	dead = ptr->rules->dead;
+	pthread_mutex_unlock(&ptr->mutex->dead);
+	return (dead);
 }
