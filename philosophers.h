@@ -10,78 +10,120 @@
 //mutex
 typedef struct s_mutex
 {
-    pthread_mutex_t	*hashi;
-    pthread_mutex_t	write_lock;
-    pthread_mutex_t	meal_lock;
-    pthread_mutex_t time_lock;
-    pthread_mutex_t max_meal_lock;
-}   t_mutex;
-
+	pthread_mutex_t	*hashi;
+	pthread_mutex_t	write_lock;
+	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	time_lock;
+	pthread_mutex_t	max_meal_lock;
+	pthread_mutex_t	dead;
+}	t_mutex;
 
 //info_philosophers
 typedef struct s_rules
 {
-    int             final_meal;
-    int             dead;
-    int             ph_quantity;
-    int             max_meals;
-    long            time_to_die;
-    long            time_to_eat;
-    long            time_to_sleep;
-    long            time_to_think;
-    long            start_time;
-    long            real_time;
-    pthread_t       monitor;
-}   t_rules;
+	int			final_meal;
+	int			dead;
+	int			ph_quantity;
+	int			max_meals;
+	long		time_to_die;
+	long		time_to_eat;
+	long		time_to_sleep;
+	long		time_to_think;
+	long		start_time;
+	long		real_time;
+	pthread_t	monitor;
+}	t_rules;
 
 //philosopher_node
 typedef struct s_node
 {
-    t_mutex         *mutex;
-    pthread_t       thread_id;
-    t_rules         *rules;
-    pthread_mutex_t	*left;
+	t_mutex			*mutex;
+	pthread_t		thread_id;
+	t_rules			*rules;
+	pthread_mutex_t	*left;
 	pthread_mutex_t	*right;
-    int             number;
-    long            last_meal;
-    int             meals;
+	int				number;
+	long			last_meal;
+	int				meals;
 	struct s_node	*next;
 	struct s_node	*prev;
-}   t_node;
+}	t_node;
 
 //list_utils
-int	    list_size(t_node *begin_list);
+int		list_size(t_node *begin_list);
 t_node	*create_elem(int philosopher_number, t_rules *rules, t_mutex *mutex);
-t_node  *list_last(t_node *head);
+t_node	*list_last(t_node *head);
 void	append_item(t_node **ptr, int ph_nb, t_rules *rules, t_mutex *mutex);
 
 //auxiliar_functions
 int		ft_atoi(const char *string);
 
 //parser
-void    print_error(char **argv);
-int     valid_input(char **argv);
+void	print_error(char **argv);
+int		valid_input(char **argv);
 
 //philosophers
-void    init_philo(t_rules *rules, char **argv, t_node **nodes);
-void    threads_and_mutexes(t_node **nodes);
+void	init_philo(t_rules *rules, char **argv, t_node **nodes);
+void	threads_and_mutexes(t_node **nodes);
+
+typedef struct s_p
+{
+	int		philosopher_index;
+	int		hashi_index;
+	t_mutex	*mutex;
+}	t_p;
 
 //main
 long	get_time(void);
 void	join_all_threads(t_node **nodes);
 
 //routine
-void    *routine(void *ptr);
-void    *monitor(void *head);
+void	*routine(void *ptr);
+void	*monitor(void *head);
+void	one_philosopher(t_node *node);
 
 //routine_utils
-void    take_hashis(t_node *ptr);
-void    put_hashis(t_node *ptr);
-void    eat(t_node *ptr);
-void    philosophers_sleep(t_node *ptr);
-void    think(t_node *ptr);
+void	take_hashis(t_node *ptr);
+void	put_hashis(t_node *ptr);
+void	eat(t_node *ptr);
+void	philosophers_sleep(t_node *ptr);
+void	think(t_node *ptr);
+void	take_right_hashi(t_node *ptr);
+void	take_left_hashi(t_node *ptr);
 
 //free_all
-void    free_list(t_node **begin_list);
+void	free_list(t_node **begin_list);
+
+typedef struct s_free
+{
+	t_node	*current;
+	t_node	*to_free;
+	t_node	*start;
+	int		i;
+	int		total_nodes;
+}	t_free;
+
+//sleep
+void	p_sleep(t_node *ptr, int flag);
+
+//monitoring_utils
+void	philo_eat_print(t_node *ptr, t_node *temp);
+void	*monitor_looping(t_node *ptr, t_node *begin_list);
+void	eat_monitor(t_node *ptr);
+
+//main
+typedef struct s_main
+{
+	t_rules	rules;
+	t_node	*nodes;
+	int		first;
+	long	start;
+	t_node	*temp;
+}	t_main;
+
+//main_utils
+void	init_main(t_node *nodes);
+void	init_check(int argc, char **argv);
+void	init_timers(t_main *p);
 
 #endif

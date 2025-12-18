@@ -1,114 +1,102 @@
 #include "philosophers.h"
 
-void    threads_and_mutexes(t_node **nodes)
+static void	t_u(t_node *nd, t_node *lst, pthread_mutex_t *hsh, int i_m)
 {
-    t_node  *individual_node;
-    t_node  *begin_list;
-    int     index_mutex;
+	t_node			*node;
+	t_node			*begin_list;
+	int				index_mutex;
+	pthread_mutex_t	*hashi;
 
-    begin_list = (*nodes);
-    index_mutex = 0;
-    individual_node = *nodes;
-    while (individual_node)
-    {
-        if (individual_node->next == begin_list)
-        {
-            individual_node->left = &individual_node->mutex->hashi[index_mutex];
-            individual_node->right = begin_list->left;
-        }
-        else
-        {
-            individual_node->left = &individual_node->mutex->hashi[index_mutex];
-            individual_node->right = &individual_node->mutex->hashi[index_mutex + 1];
-        }
-        pthread_create(&individual_node->thread_id, NULL, routine, individual_node);
-        individual_node = individual_node->next;
-        if (individual_node == begin_list)
-            break ;
-        index_mutex++;
-    }
+	begin_list = lst;
+	index_mutex = i_m;
+	node = nd;
+	hashi = hsh;
+	if (node->next == begin_list)
+	{
+		node->left = &hashi[index_mutex];
+		node->right = begin_list->left;
+	}
+	else
+	{
+		node->left = &hashi[index_mutex];
+		node->right = &hashi[index_mutex + 1];
+	}
+	pthread_create(&node->thread_id, NULL, routine, node);
 }
-/*
-void    init_philo(t_rules *rules, char **argv, t_node **nodes)
+
+void	threads_and_mutexes(t_node **nodes)
 {
-    int     philosopher_index;
-    int     ph_nb;
-    int     hashi_index;
-    t_mutex *mutex;
-    
-    rules->start_time = 0;
-    mutex = malloc(sizeof(t_mutex));
-    mutex->hashi = malloc(sizeof(pthread_mutex_t) * ft_atoi(argv[1]));
-    hashi_index = 0;
-    philosopher_index = 1;
-    rules->ph_quantity = ft_atoi(argv[1]);
-    ph_nb = rules->ph_quantity;
-    rules->time_to_die = ft_atoi(argv[2]);
-    rules->time_to_eat = ft_atoi(argv[3]);
-    rules->time_to_sleep = ft_atoi(argv[4]);
-    if (argv[5])
-        rules->max_meals = ft_atoi(argv[5]);
-    (*nodes) = create_elem(philosopher_index, rules, mutex);
-    pthread_mutex_init(&mutex->hashi[hashi_index], NULL);
-    hashi_index++;
-    philosopher_index++;
-    while (philosopher_index <= ph_nb)
-    {
-        pthread_mutex_init(&mutex->hashi[hashi_index], NULL);
-        append_item(nodes, philosopher_index, rules, mutex);
-        hashi_index++;
-        philosopher_index++;
-    }
+	t_node			*node;
+	t_node			*begin_list;
+	int				index_mutex;
+	pthread_mutex_t	*hashi;
+
+	begin_list = (*nodes);
+	index_mutex = 0;
+	node = *nodes;
+	hashi = node->mutex->hashi;
+	while (node)
+	{
+		t_u(node, begin_list, hashi, index_mutex);
+		node = node->next;
+		if (node == begin_list)
+			break ;
+		index_mutex++;
+	}
 }
-    */
-void init_philo(t_rules *rules, char **argv, t_node **nodes)
+
+static void	init_rules(t_rules *rules, int flag, char **argv)
 {
-    int     philosopher_index;
-    int     ph_nb;
-    int     hashi_index;
-    t_mutex *mutex;
-    
-    rules->start_time = 0;
-    rules->dead = 0;
-    mutex = malloc(sizeof(t_mutex));
-    if (!mutex)
-        exit(EXIT_FAILURE);
-        
-    rules->ph_quantity = ft_atoi(argv[1]);
-    ph_nb = rules->ph_quantity;
-    
-    mutex->hashi = malloc(sizeof(pthread_mutex_t) * ph_nb);
-    if (!mutex->hashi)
-    {
-        free(mutex);
-        exit(EXIT_FAILURE);
-    }
-    
-    rules->time_to_die = ft_atoi(argv[2]);
-    rules->time_to_eat = ft_atoi(argv[3]);
-    rules->time_to_sleep = ft_atoi(argv[4]);
-    
-    if (argv[5])
-        rules->max_meals = ft_atoi(argv[5]);
-    else
-        rules->max_meals = -1;
-    
-    // Inicializa mutexes dos hashis
-    hashi_index = 0;
-    while (hashi_index < ph_nb)
-    {
-        pthread_mutex_init(&mutex->hashi[hashi_index], NULL);
-        hashi_index++;
-    }
-    
-    // Cria lista circular
-    philosopher_index = 1;
-    (*nodes) = create_elem(philosopher_index, rules, mutex);
-    philosopher_index++;
-    
-    while (philosopher_index <= ph_nb)
-    {
-        append_item(nodes, philosopher_index, rules, mutex);
-        philosopher_index++;
-    }
+	if (flag == 1)
+	{
+		rules->start_time = 0;
+		rules->dead = 0;
+		return ;
+	}
+	else if (flag == 2)
+	{
+		rules->time_to_die = ft_atoi(argv[2]);
+		rules->time_to_eat = ft_atoi(argv[3]);
+		rules->time_to_sleep = ft_atoi(argv[4]);
+		if (argv[5])
+			rules->max_meals = ft_atoi(argv[5]);
+		else
+			rules->max_meals = -1;
+		return ;
+	}
+}
+
+static void	error_free(t_mutex	*mutex)
+{
+	free(mutex);
+	exit(EXIT_FAILURE);
+}
+
+void	init_philo(t_rules *rules, char **argv, t_node **nodes)
+{
+	t_p	p;
+
+	init_rules(rules, 1, argv);
+	p.mutex = malloc(sizeof(t_mutex));
+	if (!p.mutex)
+		exit(EXIT_FAILURE);
+	rules->ph_quantity = ft_atoi(argv[1]);
+	p.mutex->hashi = malloc(sizeof(pthread_mutex_t) * rules->ph_quantity);
+	if (!p.mutex->hashi)
+		error_free(p.mutex);
+	init_rules(rules, 2, argv);
+	p.hashi_index = 0;
+	while (p.hashi_index < rules->ph_quantity)
+	{
+		pthread_mutex_init(&p.mutex->hashi[p.hashi_index], NULL);
+		p.hashi_index++;
+	}
+	p.philosopher_index = 1;
+	(*nodes) = create_elem(p.philosopher_index, rules, p.mutex);
+	p.philosopher_index++;
+	while (p.philosopher_index <= rules->ph_quantity)
+	{
+		append_item(nodes, p.philosopher_index, rules, p.mutex);
+		p.philosopher_index++;
+	}
 }

@@ -11,8 +11,8 @@ t_node	*create_elem(int philosopher_number, t_rules *rules, t_mutex *mutex)
 	{
 		ptr->number = philosopher_number;
 		ptr->next = NULL;
-        ptr->prev = NULL;
-        ptr->rules = rules;
+		ptr->prev = NULL;
+		ptr->rules = rules;
 		ptr->mutex = mutex;
 	}
 	return (ptr);
@@ -33,19 +33,16 @@ int	list_size(t_node *begin_list)
 	return (i);
 }
 
-t_node *list_last(t_node *head)
+t_node	*list_last(t_node *head)
 {
-    t_node *node;
+	t_node	*node;
 
-    if (!head)
-        return NULL;
-
-    node = head;
-    while (node->next != head && node->next != NULL)
-	{
-        node = node->next;
-	}
-    return node;
+	if (!head)
+		return (NULL);
+	node = head;
+	while (node->next != head && node->next != NULL)
+		node = node->next;
+	return (node);
 }
 
 void	append_item(t_node **ptr, int ph_nb, t_rules *rules, t_mutex *mutex)

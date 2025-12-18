@@ -27,64 +27,62 @@ int	ft_atoi(const char *string)
 	}
 	return (nb * sign);
 }
-/*
+
 void	free_list(t_node **begin_list)
 {
-	t_node	*to_free;
+	t_free	p;
 
 	if (!begin_list || !*begin_list)
 		return ;
-	free((*begin_list)->mutex->hashi);
-	free((*begin_list)->mutex);
-	while (*begin_list)
+	p.start = *begin_list;
+	p.total_nodes = p.start->rules->ph_quantity;
+	p.current = p.start->next;
+	if (p.start->mutex)
 	{
-		to_free = *begin_list;
-		*begin_list = (*begin_list)->next;
-		to_free->next = NULL;
-		to_free->prev = NULL;
-		if (to_free)
-			free(to_free);
+		if (p.start->mutex->hashi)
+			free(p.start->mutex->hashi);
+		free(p.start->mutex);
+	}
+	free(p.start);
+	p.i = 1;
+	while (p.i < p.total_nodes && p.current)
+	{
+		p.to_free = p.current;
+		p.current = p.current->next;
+		free(p.to_free);
+		p.i++;
 	}
 	*begin_list = NULL;
 }
-	*/
-void	free_list(t_node **begin_list)
-{
-	t_node	*current;
-	t_node	*to_free;
-	t_node	*start;
-	int		i;
-	int		total_nodes;
 
-	if (!begin_list || !*begin_list)
-		return ;
-	
-	start = *begin_list;
-	total_nodes = start->rules->ph_quantity;
-	
-	// Salva ponteiros antes de quebrar a lista
-	current = start->next;
-	
-	// Libera recursos compartilhados
-	if (start->mutex)
-	{
-		if (start->mutex->hashi)
-			free(start->mutex->hashi);
-		free(start->mutex);
-	}
-	
-	// Libera primeiro nó
-	free(start);
-	
-	// Libera resto da lista
-	i = 1;
-	while (i < total_nodes && current)
-	{
-		to_free = current;
-		current = current->next;
-		free(to_free);
-		i++;
-	}
-	
-	*begin_list = NULL;
+void	take_right_hashi(t_node *ptr)
+{
+	pthread_mutex_lock(ptr->right);
+	pthread_mutex_lock(&ptr->mutex->write_lock);
+	printf(" %luMS ", get_time() - ptr->rules->real_time);
+	printf("|🥢👈 FILÓSOFO %d PEGOU O HASHI A DIREITA\n", ptr->number);
+	printf("|==================================================|\n");
+	pthread_mutex_unlock(&ptr->mutex->write_lock);
+	pthread_mutex_lock(ptr->left);
+	pthread_mutex_lock(&ptr->mutex->write_lock);
+	printf(" %luMS ", get_time() - ptr->rules->real_time);
+	printf("|👉🥢 FILÓSOFO %d PEGOU O HASHI A ESQUERDA\n", ptr->number);
+	printf("|==================================================|\n");
+	pthread_mutex_unlock(&ptr->mutex->write_lock);
+}
+
+void	take_left_hashi(t_node *ptr)
+{
+	pthread_mutex_lock(ptr->left);
+	pthread_mutex_lock(&ptr->mutex->write_lock);
+	printf(" %luMS ", get_time() - ptr->rules->real_time);
+	printf("|🥢👈 FILÓSOFO %d PEGOU O HASHI A ESQUERDA\n", ptr->number);
+	printf("|==================================================|\n");
+	pthread_mutex_unlock(&ptr->mutex->write_lock);
+	pthread_mutex_lock(ptr->right);
+	pthread_mutex_lock(&ptr->mutex->write_lock);
+	printf(" %luMS ", get_time() - ptr->rules->real_time);
+	printf("|👉🥢 FILÓSOFO %d PEGOU O HASHI A DIREITA\n", ptr->number);
+	printf("|==================================================|\n");
+	pthread_mutex_unlock(&ptr->mutex->write_lock);
 }
