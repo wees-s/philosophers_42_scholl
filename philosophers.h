@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/19 11:03:24 by wedos-sa          #+#    #+#             */
+/*   Updated: 2025/12/19 14:15:06 by wedos-sa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHERS_H
 # define PHILOSOPHERS_H
 
@@ -89,6 +101,7 @@ void	philosophers_sleep(t_node *ptr);
 void	think(t_node *ptr);
 int		take_right_hashi(t_node *ptr);
 int		take_left_hashi(t_node *ptr);
+void	routine_while(t_node *node);
 
 //free_all
 void	free_list(t_node **begin_list);
@@ -128,5 +141,9 @@ void	init_timers(t_main *p);
 
 //dead_verification
 int		is_dead(t_node *ptr);
+
+//print
+void	print_fork_left(t_node *ptr);
+void	print_fork_right(t_node *ptr);
 
 #endif

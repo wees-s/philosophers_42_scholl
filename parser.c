@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/19 11:03:10 by wedos-sa          #+#    #+#             */
+/*   Updated: 2025/12/19 14:20:57 by wedos-sa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 int	valid_input(char **argv)
@@ -40,6 +52,14 @@ void	init_check(int argc, char **argv)
 	{
 		if (ft_atoi(argv[1]) < 1 || !valid_input(argv))
 			print_error(argv);
+		if (argc == 6)
+		{
+			if (ft_atoi(argv[5]) < 1)
+			{
+				printf("ERROR: Minimum 1 meal.\n");
+				exit(EXIT_FAILURE);
+			}
+		}
 	}
 	else
 	{

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/19 11:03:43 by wedos-sa          #+#    #+#             */
+/*   Updated: 2025/12/19 14:03:13 by wedos-sa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 int	ft_atoi(const char *string)
@@ -55,102 +67,64 @@ void	free_list(t_node **begin_list)
 	*begin_list = NULL;
 }
 
-int take_right_hashi(t_node *ptr)
+int	take_right_hashi(t_node *ptr)
 {
-    pthread_mutex_lock(ptr->right);
-    
-    if (is_dead(ptr))
-    {
-        pthread_mutex_unlock(ptr->right);
-        return (0);  // ✅ Retorna 0 = não conseguiu pegar os hashis
-    }
-    
-    pthread_mutex_lock(&ptr->mutex->write_lock);
-    if (!is_dead(ptr))
-    {
-        printf(" %luMS ", get_time() - ptr->rules->real_time);
-        printf("|🥢👈 FILÓSOFO %d PEGOU O HASHI A DIREITA\n", ptr->number);
-        printf("|==================================================|\n");
-    }
-    pthread_mutex_unlock(&ptr->mutex->write_lock);
-    
-    if (is_dead(ptr))
-    {
-        pthread_mutex_unlock(ptr->right);
-        return (0);  // ✅ Retorna 0
-    }
-    
-    pthread_mutex_lock(ptr->left);
-    
-    if (is_dead(ptr))
-    {
-        pthread_mutex_unlock(ptr->left);
-        pthread_mutex_unlock(ptr->right);
-        return (0);  // ✅ Retorna 0
-    }
-    
-    pthread_mutex_lock(&ptr->mutex->write_lock);
-    if (!is_dead(ptr))
-    {
-        printf(" %luMS ", get_time() - ptr->rules->real_time);
-        printf("|👉🥢 FILÓSOFO %d PEGOU O HASHI A ESQUERDA\n", ptr->number);
-        printf("|==================================================|\n");
-    }
-    pthread_mutex_unlock(&ptr->mutex->write_lock);
-    
-    return (1);  // ✅ Retorna 1 = sucesso
+	pthread_mutex_lock(ptr->right);
+	if (is_dead(ptr))
+	{
+		pthread_mutex_unlock(ptr->right);
+		return (0);
+	}
+	if (!is_dead(ptr))
+		print_fork_right(ptr);
+	if (is_dead(ptr))
+	{
+		pthread_mutex_unlock(ptr->right);
+		return (0);
+	}
+	pthread_mutex_lock(ptr->left);
+	if (is_dead(ptr))
+	{
+		pthread_mutex_unlock(ptr->left);
+		pthread_mutex_unlock(ptr->right);
+		return (0);
+	}
+	if (!is_dead(ptr))
+		print_fork_left(ptr);
+	return (1);
 }
 
-int take_left_hashi(t_node *ptr)
+int	take_left_hashi(t_node *ptr)
 {
-    pthread_mutex_lock(ptr->left);
-    
-    if (is_dead(ptr))
-    {
-        pthread_mutex_unlock(ptr->left);
-        return (0);
-    }
-    
-    pthread_mutex_lock(&ptr->mutex->write_lock);
-    if (!is_dead(ptr))
-    {
-        printf(" %luMS ", get_time() - ptr->rules->real_time);
-        printf("|🥢👈 FILÓSOFO %d PEGOU O HASHI A ESQUERDA\n", ptr->number);
-        printf("|==================================================|\n");
-    }
-    pthread_mutex_unlock(&ptr->mutex->write_lock);
-    
-    if (is_dead(ptr))
-    {
-        pthread_mutex_unlock(ptr->left);
-        return (0);
-    }
-    
-    pthread_mutex_lock(ptr->right);
-    
-    if (is_dead(ptr))
-    {
-        pthread_mutex_unlock(ptr->right);
-        pthread_mutex_unlock(ptr->left);
-        return (0);
-    }
-    
-    pthread_mutex_lock(&ptr->mutex->write_lock);
-    if (!is_dead(ptr))
-    {
-        printf(" %luMS ", get_time() - ptr->rules->real_time);
-        printf("|👉🥢 FILÓSOFO %d PEGOU O HASHI A DIREITA\n", ptr->number);
-        printf("|==================================================|\n");
-    }
-    pthread_mutex_unlock(&ptr->mutex->write_lock);
-    
-    return (1);
+	pthread_mutex_lock(ptr->left);
+	if (is_dead(ptr))
+	{
+		pthread_mutex_unlock(ptr->left);
+		return (0);
+	}
+	if (!is_dead(ptr))
+		print_fork_left(ptr);
+	if (is_dead(ptr))
+	{
+		pthread_mutex_unlock(ptr->left);
+		return (0);
+	}
+	pthread_mutex_lock(ptr->right);
+	if (is_dead(ptr))
+	{
+		pthread_mutex_unlock(ptr->right);
+		pthread_mutex_unlock(ptr->left);
+		return (0);
+	}
+	if (!is_dead(ptr))
+		print_fork_right(ptr);
+	return (1);
 }
 
-int is_dead(t_node *ptr)
+int	is_dead(t_node *ptr)
 {
-	int dead;
-	
+	int	dead;
+
 	pthread_mutex_lock(&ptr->mutex->dead);
 	dead = ptr->rules->dead;
 	pthread_mutex_unlock(&ptr->mutex->dead);

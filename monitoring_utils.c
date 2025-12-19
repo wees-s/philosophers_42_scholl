@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitoring_utils.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/19 11:03:04 by wedos-sa          #+#    #+#             */
+/*   Updated: 2025/12/19 14:33:09 by wedos-sa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philosophers.h"
 
 void	philo_eat_print(t_node *ptr, t_node *temp)
@@ -6,13 +18,13 @@ void	philo_eat_print(t_node *ptr, t_node *temp)
 
 	i = 0;
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %luMS | ✅ TODOS OS FILÓSOFOS COMERAM\n",
+	printf(" %luMS | ✅ all philosophers have eaten\n",
 		get_time() - ptr->rules->real_time);
 	printf("|==================================================|\n");
 	temp = ptr;
 	while (i < ptr->rules->ph_quantity)
 	{
-		printf(" ✅ FILÓSOFO %d COMEU [%d] VEZES\n", temp->number, temp->meals);
+		printf(" ✅ philosopher %d eat [%d]x\n", temp->number, temp->meals);
 		temp = temp->next;
 		i++;
 	}
@@ -23,39 +35,35 @@ void	philo_eat_print(t_node *ptr, t_node *temp)
 static void	print_dead(t_node *ptr)
 {
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %ldMS | FILOSOFO %d MORREU ☠️\n",
+	printf(" %ldMS | philosopher %d dead ☠️\n",
 		get_time() - ptr->rules->real_time, ptr->number);
 	pthread_mutex_unlock(&ptr->mutex->write_lock);
 }
 
-void *monitor_looping(t_node *ptr, t_node *begin_list)
+void	*monitor_looping(t_node *ptr, t_node *begin_list)
 {
-    while (ptr)
-    {
-        if (ptr->rules->max_meals > 0)
-        {
-            pthread_mutex_lock(&ptr->mutex->max_meal_lock);
-            eat_monitor(ptr);
-            pthread_mutex_unlock(&ptr->mutex->max_meal_lock);
-            if (is_dead(ptr))  // ✅ USA A FUNÇÃO SEGURA
-                return (NULL);
-        }
-        pthread_mutex_lock(&ptr->mutex->meal_lock);
-        if (get_time() - ptr->last_meal > ptr->rules->time_to_die)
-        {
-            pthread_mutex_unlock(&ptr->mutex->meal_lock);
-            print_dead(ptr);
-            
-            // ✅ PROTEGE A ESCRITA
-            pthread_mutex_lock(&ptr->mutex->dead);
-            ptr->rules->dead = 1;
-            pthread_mutex_unlock(&ptr->mutex->dead);
-            return (NULL);
-        }
-        pthread_mutex_unlock(&ptr->mutex->meal_lock);
-        ptr = ptr->next;
-        if (ptr == begin_list)
-            break;
-    }
-    return ((void *)1);
+	while (ptr && ptr->next != begin_list)
+	{
+		if (ptr->rules->max_meals > 0)
+		{
+			pthread_mutex_lock(&ptr->mutex->max_meal_lock);
+			eat_monitor(ptr);
+			pthread_mutex_unlock(&ptr->mutex->max_meal_lock);
+			if (is_dead(ptr))
+				return (NULL);
+		}
+		pthread_mutex_lock(&ptr->mutex->meal_lock);
+		if (get_time() - ptr->last_meal > ptr->rules->time_to_die)
+		{
+			pthread_mutex_unlock(&ptr->mutex->meal_lock);
+			print_dead(ptr);
+			pthread_mutex_lock(&ptr->mutex->dead);
+			ptr->rules->dead = 1;
+			pthread_mutex_unlock(&ptr->mutex->dead);
+			return (NULL);
+		}
+		pthread_mutex_unlock(&ptr->mutex->meal_lock);
+		ptr = ptr->next;
+	}
+	return ((void *)1);
 }
