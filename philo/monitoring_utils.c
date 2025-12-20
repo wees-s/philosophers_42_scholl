@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 11:03:04 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/19 14:33:09 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/20 11:28:18 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	philo_eat_print(t_node *ptr, t_node *temp)
 
 	i = 0;
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %luMS | ✅ all philosophers have eaten\n",
+	printf(" %lu | ✅ all philosophers have eaten\n",
 		get_time() - ptr->rules->real_time);
 	printf("|==================================================|\n");
 	temp = ptr;
@@ -35,7 +35,7 @@ void	philo_eat_print(t_node *ptr, t_node *temp)
 static void	print_dead(t_node *ptr)
 {
 	pthread_mutex_lock(&ptr->mutex->write_lock);
-	printf(" %ldMS | philosopher %d dead ☠️\n",
+	printf(" %ld | philosopher %d dead ☠️\n",
 		get_time() - ptr->rules->real_time, ptr->number);
 	pthread_mutex_unlock(&ptr->mutex->write_lock);
 }

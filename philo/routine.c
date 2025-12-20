@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 11:03:32 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/19 14:14:32 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/20 11:29:19 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	one_philosopher(t_node *node)
 	pthread_mutex_lock(&node->mutex->write_lock);
 	if (!node->rules->dead)
 	{
-		printf(" %luMS |🥢 philosopher 1 has taken a fork\n",
+		printf(" %lu |🥢 philosopher 1 has taken a fork\n",
 			get_time() - node->rules->real_time);
 	}
 	pthread_mutex_unlock(&node->mutex->write_lock);
@@ -73,7 +73,7 @@ void	one_philosopher(t_node *node)
 	pthread_mutex_lock(&node->mutex->write_lock);
 	if (!node->rules->dead)
 	{
-		printf(" %luMS | philosopher 1 died ☠️\n",
+		printf(" %lu | philosopher 1 died ☠️\n",
 			get_time() - node->rules->real_time);
 	}
 	pthread_mutex_unlock(&node->mutex->write_lock);

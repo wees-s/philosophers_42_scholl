@@ -6,7 +6,7 @@
 /*   By: wedos-sa <wedos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 11:03:38 by wedos-sa          #+#    #+#             */
-/*   Updated: 2025/12/19 11:43:58 by wedos-sa         ###   ########.fr       */
+/*   Updated: 2025/12/20 11:28:04 by wedos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	eat(t_node *ptr)
 	pthread_mutex_lock(&ptr->mutex->write_lock);
 	if (!is_dead(ptr))
 	{
-		printf(" %luMS ", get_time() - ptr->rules->real_time);
+		printf(" %lu ", get_time() - ptr->rules->real_time);
 		printf("|🥢🍜 philosopher %d is eating\n", ptr->number);
 		printf("|====================================================|\n");
 	}
@@ -54,7 +54,7 @@ void	philosophers_sleep(t_node *ptr)
 	pthread_mutex_lock(&ptr->mutex->write_lock);
 	if (!is_dead(ptr))
 	{
-		printf(" %luMS ", get_time() - ptr->rules->real_time);
+		printf(" %lu ", get_time() - ptr->rules->real_time);
 		printf("|😴💤 philosopher %d is sleeping\n", ptr->number);
 		printf("|====================================================|\n");
 	}
@@ -69,7 +69,7 @@ void	think(t_node *ptr)
 	pthread_mutex_lock(&ptr->mutex->write_lock);
 	if (!is_dead(ptr))
 	{
-		printf(" %luMS ", get_time() - ptr->rules->real_time);
+		printf(" %lu ", get_time() - ptr->rules->real_time);
 		printf("|🤯💬 philosopher %d is thinking\n", ptr->number);
 		printf("|====================================================|\n");
 	}

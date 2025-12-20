@@ -1,1 +1,0 @@
-# philosophers_42_scholl
