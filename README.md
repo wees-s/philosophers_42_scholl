@@ -1,5 +1,3 @@
-Beleza, Wesley. README simples, direto e sem firula:
-
 ---
 
 ## Philosophers
